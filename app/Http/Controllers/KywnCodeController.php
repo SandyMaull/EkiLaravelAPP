@@ -19,7 +19,11 @@ class KywnCodeController extends Controller
         $paginations = ($request->input('pagination') != null) ? $request->input('pagination') : 5;
         $orderBy = ($request->input('orderBy') != null) ? $request->input('orderBy') : 'id';
         $orderSort = ($request->input('orderSort') != null) ? $request->input('orderSort') : 'asc';
-        $query = Kywn_Code::with([])->orderBy($orderBy, $orderSort)->paginate($paginations);
+        if ($request->input('columnSearch') != null && $request->input('searchKey') != null) {
+            $query = Kywn_Code::where($request->input('columnSearch'), 'LIKE', '%' . $request->input('searchKey') . '%')->with([])->orderBy($orderBy, $orderSort)->paginate($paginations);
+        } else {
+            $query = Kywn_Code::with([])->orderBy($orderBy, $orderSort)->paginate($paginations);
+        }
         return KywnCodeResource::collection($query)->additional([
             'code' => 200,
             'desc' => ''

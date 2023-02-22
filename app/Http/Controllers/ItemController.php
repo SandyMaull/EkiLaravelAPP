@@ -19,7 +19,11 @@ class ItemController extends Controller
         $paginations = ($request->input('pagination') != null) ? $request->input('pagination') : 5;
         $orderBy = ($request->input('orderBy') != null) ? $request->input('orderBy') : 'id';
         $orderSort = ($request->input('orderSort') != null) ? $request->input('orderSort') : 'asc';
-        $query = Item::with(['kode_barang', 'kywn_code'])->orderBy($orderBy, $orderSort)->paginate($paginations);
+        if ($request->input('columnSearch') != null && $request->input('searchKey') != null) {
+            $query = Item::where($request->input('columnSearch'), 'LIKE', '%' . $request->input('searchKey') . '%')->with(['kode_barang', 'kywn_code'])->orderBy($orderBy, $orderSort)->paginate($paginations);
+        } else {
+            $query = Item::with(['kode_barang', 'kywn_code'])->orderBy($orderBy, $orderSort)->paginate($paginations);
+        }
         return ItemResource::collection($query)->additional([
             'code' => 200,
             'desc' => ''
