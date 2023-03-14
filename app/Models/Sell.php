@@ -1,27 +1,28 @@
 <?php
 
-namespace App\Models\Item;
+namespace App\Models;
 
+use App\Models\Item\Item;
+use App\Models\Item\Kywn_Code;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Item extends Model
+class Sell extends Model
 {
     use HasFactory;
 
-    protected $table = 'items';
+    protected $table = 'sells';
     protected $fillable = [
-        'kode_barang_id',
+        'item_id',
         'quantity',
         'kywn_code_id',
-        'desc',
-        'updated_at'
+        'status'
     ];
 
-    public function kode_barang(): BelongsTo
+    public function item(): BelongsTo
     {
-        return $this->belongsTo(KodeBarang::class, 'kode_barang_id');
+        return $this->belongsTo(Item::class, 'item_id');
     }
 
     public function kywn_code(): BelongsTo

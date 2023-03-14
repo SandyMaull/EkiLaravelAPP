@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ItemRequest;
-use App\Http\Resources\ItemResource;
-use App\Models\Item\Item;
+use App\Http\Requests\NoteOutRequest;
+use App\Http\Resources\NoteOutResource;
+use App\Models\NoteOut;
 use Illuminate\Http\Request;
 
-class ItemController extends Controller
+class NoteOutController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -20,15 +20,15 @@ class ItemController extends Controller
         $orderBy = ($request->input('orderBy') != null) ? $request->input('orderBy') : 'id';
         $orderSort = ($request->input('orderSort') != null) ? $request->input('orderSort') : 'asc';
         if ($request->input('columnSearch') != null && $request->input('searchKey') != null) {
-            $query = Item::where($request->input('columnSearch'), 'LIKE', '%' . $request->input('searchKey') . '%')->with(['kode_barang', 'kywn_code'])->orderBy($orderBy, $orderSort)->paginate($paginations);
+            $query = NoteOut::where($request->input('columnSearch'), 'LIKE', '%' . $request->input('searchKey') . '%')->with(['sell', 'note'])->orderBy($orderBy, $orderSort)->paginate($paginations);
         } else {
-            $query = Item::with(['kode_barang', 'kywn_code'])->orderBy($orderBy, $orderSort)->paginate($paginations);
+            $query = NoteOut::with(['sell', 'note'])->orderBy($orderBy, $orderSort)->paginate($paginations);
         }
-        return ItemResource::collection($query)->additional([
+        return NoteOutResource::collection($query)->additional([
             'code' => 200,
             'desc' => ''
         ]);
-        // $model = Item::all();
+        // $model = NoteOut::all();
         // return $model;
     }
 
@@ -38,17 +38,15 @@ class ItemController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(ItemRequest $request): ItemResource
+    public function store(NoteOutRequest $request): NoteOutResource
     {
-        $query = Item::query()
+        $query = NoteOut::query()
             ->create([
-                'kode_barang_id' => $request['kode_barang_id'],
-                'quantity' => $request['quantity'],
-                'kywn_code_id' => $request['karyawan_id'],
-                'desc' => $request['desc'],
+                'sell_id' => $request['sell_id'],
+                'note_id' => $request['note_id']
             ]);
 
-        return (new ItemResource( Item::with(['kode_barang', 'kywn_code'])->findOrFail($query->id) ))->additional([
+        return (new NoteOutResource( NoteOut::with(['sell', 'note'])->findOrFail($query->id) ))->additional([
             'code' => 200,
             'desc' => ''
         ]);
@@ -60,10 +58,10 @@ class ItemController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id): ItemResource
+    public function show($id): NoteOutResource
     {
-        $query = Item::with(['kode_barang', 'kywn_code'])->findOrFail($id);
-        return (new ItemResource($query))->additional([
+        $query = NoteOut::with(['sell', 'note'])->findOrFail($id);
+        return (new NoteOutResource($query))->additional([
             'code' => 200,
             'desc' => ''
         ]);
@@ -76,13 +74,13 @@ class ItemController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(ItemRequest $request, $id) : ItemResource
+    public function update(NoteOutRequest $request, $id) : NoteOutResource
     {
-        $query = Item::with(['kode_barang', 'kywn_code'])->findOrFail($id);
+        $query = NoteOut::with(['sell', 'note'])->findOrFail($id);
         $fields = $request->only($query->getFillable());
         $query->fill($fields);
         $query->save();
-        return (new ItemResource($query))->additional([
+        return (new NoteOutResource($query))->additional([
             'code' => 200,
             'desc' => ''
         ]);
@@ -94,11 +92,11 @@ class ItemController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id) : ItemResource
+    public function destroy($id) : NoteOutResource
     {
-        $query = Item::with([])->findOrFail($id);
+        $query = NoteOut::with([])->findOrFail($id);
         $query->delete();
-        return (new ItemResource($query))->additional([
+        return (new NoteOutResource($query))->additional([
             'code' => 200,
             'desc' => ''
         ]);

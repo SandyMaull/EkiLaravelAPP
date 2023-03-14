@@ -15,7 +15,12 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
         $this->call([
-            DatabaseSeed::class,
+            UserSeed::class,
         ]);
+        for ($i=0; $i < 5; $i++) { 
+            $this->call([
+                DatabaseSeed::class,
+            ]);
+        }
     }
 }

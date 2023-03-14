@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ItemRequest extends FormRequest
+class SellRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,10 +24,10 @@ class ItemRequest extends FormRequest
     public function rules()
     {
         return [
-            'kode_barang_id' => 'required|exists:kode_barangs,id',
+            'item_id' => 'required|exists:items,id',
             'quantity' => 'required',
             'karyawan_id' => 'required|exists:kywn__codes,id',
-            'desc' => 'required'
+            'status' => 'required|in:Terjual,Dikembalikan'
         ];
     }
 }

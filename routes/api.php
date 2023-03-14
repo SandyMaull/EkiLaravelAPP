@@ -5,6 +5,10 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\KodeBarangController;
 use App\Http\Controllers\KywnCodeController;
 use App\Http\Controllers\MerkController;
+use App\Http\Controllers\NoteComeController;
+use App\Http\Controllers\NoteController;
+use App\Http\Controllers\NoteOutController;
+use App\Http\Controllers\SellController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -38,6 +42,22 @@ Route::middleware('auth:sanctum')->group(function () {
     ]);
 
     Route::resource('item', ItemController::class)->except([
+        'create', 'edit'
+    ]);
+
+    Route::resource('item_sell', SellController::class)->except([
+        'create', 'edit'
+    ]);
+
+    Route::resource('note', NoteController::class)->except([
+        'create', 'edit'
+    ]);
+
+    Route::resource('note_come', NoteComeController::class)->except([
+        'create', 'edit'
+    ]);
+
+    Route::resource('note_out', NoteOutController::class)->except([
         'create', 'edit'
     ]);
 });

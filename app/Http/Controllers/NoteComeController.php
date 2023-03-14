@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ItemRequest;
-use App\Http\Resources\ItemResource;
-use App\Models\Item\Item;
+use App\Http\Requests\NoteComeRequest;
+use App\Http\Resources\NoteComeResource;
+use App\Models\NoteCome;
 use Illuminate\Http\Request;
 
-class ItemController extends Controller
+class NoteComeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -20,15 +20,15 @@ class ItemController extends Controller
         $orderBy = ($request->input('orderBy') != null) ? $request->input('orderBy') : 'id';
         $orderSort = ($request->input('orderSort') != null) ? $request->input('orderSort') : 'asc';
         if ($request->input('columnSearch') != null && $request->input('searchKey') != null) {
-            $query = Item::where($request->input('columnSearch'), 'LIKE', '%' . $request->input('searchKey') . '%')->with(['kode_barang', 'kywn_code'])->orderBy($orderBy, $orderSort)->paginate($paginations);
+            $query = NoteCome::where($request->input('columnSearch'), 'LIKE', '%' . $request->input('searchKey') . '%')->with(['item', 'note'])->orderBy($orderBy, $orderSort)->paginate($paginations);
         } else {
-            $query = Item::with(['kode_barang', 'kywn_code'])->orderBy($orderBy, $orderSort)->paginate($paginations);
+            $query = NoteCome::with(['item', 'note'])->orderBy($orderBy, $orderSort)->paginate($paginations);
         }
-        return ItemResource::collection($query)->additional([
+        return NoteComeResource::collection($query)->additional([
             'code' => 200,
             'desc' => ''
         ]);
-        // $model = Item::all();
+        // $model = NoteCome::all();
         // return $model;
     }
 
@@ -38,17 +38,16 @@ class ItemController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(ItemRequest $request): ItemResource
+    public function store(NoteComeRequest $request): NoteComeResource
     {
-        $query = Item::query()
+        $query = NoteCome::query()
             ->create([
-                'kode_barang_id' => $request['kode_barang_id'],
-                'quantity' => $request['quantity'],
-                'kywn_code_id' => $request['karyawan_id'],
-                'desc' => $request['desc'],
+                'item_id' => $request['item_id'],
+                'note_id' => $request['note_id'],
+                'verify' => $request['verify']
             ]);
 
-        return (new ItemResource( Item::with(['kode_barang', 'kywn_code'])->findOrFail($query->id) ))->additional([
+        return (new NoteComeResource( NoteCome::with(['item', 'note'])->findOrFail($query->id) ))->additional([
             'code' => 200,
             'desc' => ''
         ]);
@@ -60,10 +59,10 @@ class ItemController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id): ItemResource
+    public function show($id): NoteComeResource
     {
-        $query = Item::with(['kode_barang', 'kywn_code'])->findOrFail($id);
-        return (new ItemResource($query))->additional([
+        $query = NoteCome::with(['item', 'note'])->findOrFail($id);
+        return (new NoteComeResource($query))->additional([
             'code' => 200,
             'desc' => ''
         ]);
@@ -76,13 +75,13 @@ class ItemController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(ItemRequest $request, $id) : ItemResource
+    public function update(NoteComeRequest $request, $id) : NoteComeResource
     {
-        $query = Item::with(['kode_barang', 'kywn_code'])->findOrFail($id);
+        $query = NoteCome::with(['item', 'note'])->findOrFail($id);
         $fields = $request->only($query->getFillable());
         $query->fill($fields);
         $query->save();
-        return (new ItemResource($query))->additional([
+        return (new NoteComeResource($query))->additional([
             'code' => 200,
             'desc' => ''
         ]);
@@ -94,11 +93,11 @@ class ItemController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id) : ItemResource
+    public function destroy($id) : NoteComeResource
     {
-        $query = Item::with([])->findOrFail($id);
+        $query = NoteCome::with([])->findOrFail($id);
         $query->delete();
-        return (new ItemResource($query))->additional([
+        return (new NoteComeResource($query))->additional([
             'code' => 200,
             'desc' => ''
         ]);

@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Note;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ItemRequest extends FormRequest
+class NoteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,11 +24,11 @@ class ItemRequest extends FormRequest
      */
     public function rules()
     {
+        $urlId = $this->route('note');
+        $dataId = Note::where('note_num', $urlId)->first();
+        $dataId = ($dataId) ? $dataId->id : null;
         return [
-            'kode_barang_id' => 'required|exists:kode_barangs,id',
-            'quantity' => 'required',
-            'karyawan_id' => 'required|exists:kywn__codes,id',
-            'desc' => 'required'
+            'note_num' => 'required|string|max:255|unique:notes,note_num,' . $dataId,
         ];
     }
 }

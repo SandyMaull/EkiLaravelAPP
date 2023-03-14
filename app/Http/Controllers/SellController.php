@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ItemRequest;
-use App\Http\Resources\ItemResource;
-use App\Models\Item\Item;
+use App\Http\Requests\SellRequest;
+use App\Http\Resources\SellResource;
+use App\Models\Sell;
 use Illuminate\Http\Request;
 
-class ItemController extends Controller
+class SellController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -20,15 +20,15 @@ class ItemController extends Controller
         $orderBy = ($request->input('orderBy') != null) ? $request->input('orderBy') : 'id';
         $orderSort = ($request->input('orderSort') != null) ? $request->input('orderSort') : 'asc';
         if ($request->input('columnSearch') != null && $request->input('searchKey') != null) {
-            $query = Item::where($request->input('columnSearch'), 'LIKE', '%' . $request->input('searchKey') . '%')->with(['kode_barang', 'kywn_code'])->orderBy($orderBy, $orderSort)->paginate($paginations);
+            $query = Sell::where($request->input('columnSearch'), 'LIKE', '%' . $request->input('searchKey') . '%')->with(['item', 'kywn_code'])->orderBy($orderBy, $orderSort)->paginate($paginations);
         } else {
-            $query = Item::with(['kode_barang', 'kywn_code'])->orderBy($orderBy, $orderSort)->paginate($paginations);
+            $query = Sell::with(['item', 'kywn_code'])->orderBy($orderBy, $orderSort)->paginate($paginations);
         }
-        return ItemResource::collection($query)->additional([
+        return SellResource::collection($query)->additional([
             'code' => 200,
             'desc' => ''
         ]);
-        // $model = Item::all();
+        // $model = Sell::all();
         // return $model;
     }
 
@@ -38,17 +38,17 @@ class ItemController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(ItemRequest $request): ItemResource
+    public function store(SellRequest $request): SellResource
     {
-        $query = Item::query()
+        $query = Sell::query()
             ->create([
-                'kode_barang_id' => $request['kode_barang_id'],
+                'item_id' => $request['item_id'],
                 'quantity' => $request['quantity'],
                 'kywn_code_id' => $request['karyawan_id'],
-                'desc' => $request['desc'],
+                'status' => $request['status'],
             ]);
 
-        return (new ItemResource( Item::with(['kode_barang', 'kywn_code'])->findOrFail($query->id) ))->additional([
+        return (new SellResource( Sell::with(['item', 'kywn_code'])->findOrFail($query->id) ))->additional([
             'code' => 200,
             'desc' => ''
         ]);
@@ -60,10 +60,10 @@ class ItemController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id): ItemResource
+    public function show($id): SellResource
     {
-        $query = Item::with(['kode_barang', 'kywn_code'])->findOrFail($id);
-        return (new ItemResource($query))->additional([
+        $query = Sell::with(['item', 'kywn_code'])->findOrFail($id);
+        return (new SellResource($query))->additional([
             'code' => 200,
             'desc' => ''
         ]);
@@ -76,13 +76,13 @@ class ItemController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(ItemRequest $request, $id) : ItemResource
+    public function update(SellRequest $request, $id) : SellResource
     {
-        $query = Item::with(['kode_barang', 'kywn_code'])->findOrFail($id);
+        $query = Sell::with(['item', 'kywn_code'])->findOrFail($id);
         $fields = $request->only($query->getFillable());
         $query->fill($fields);
         $query->save();
-        return (new ItemResource($query))->additional([
+        return (new SellResource($query))->additional([
             'code' => 200,
             'desc' => ''
         ]);
@@ -94,11 +94,11 @@ class ItemController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id) : ItemResource
+    public function destroy($id) : SellResource
     {
-        $query = Item::with([])->findOrFail($id);
+        $query = Sell::with([])->findOrFail($id);
         $query->delete();
-        return (new ItemResource($query))->additional([
+        return (new SellResource($query))->additional([
             'code' => 200,
             'desc' => ''
         ]);
